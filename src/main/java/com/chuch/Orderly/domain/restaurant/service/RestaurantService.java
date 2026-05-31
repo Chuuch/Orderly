@@ -1,6 +1,7 @@
 package com.chuch.Orderly.domain.restaurant.service;
 
 import com.chuch.Orderly.domain.restaurant.dto.CreateRestaurantRequest;
+import com.chuch.Orderly.domain.restaurant.dto.UpdateRestaurantRequest;
 import com.chuch.Orderly.domain.restaurant.entity.Restaurant;
 import com.chuch.Orderly.domain.restaurant.mapper.RestaurantMapper;
 import com.chuch.Orderly.domain.restaurant.repository.RestaurantRepository;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,5 +35,19 @@ public class RestaurantService {
 
         log.info("Успешно създаден ресторант [{}] с генерирано ID: {}", savedRestaurant, savedRestaurant.getId());
         return savedRestaurant;
+    }
+
+    @Transactional
+    public Restaurant updateRestaurant(UUID id, UpdateRestaurantRequest request) {
+        log.info("Обновяване на ресторант с ID: {}", id);
+
+        Restaurant restaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Ресторант с това ID не беше намерен."));
+
+        restaurantMapper.updateEntityFromDto(request, restaurant);
+
+        Restaurant updatedRestaurant = restaurantRepository.save(restaurant);
+        log.info("Ресторантът [{}] беше обновен успешно.", updatedRestaurant.getName());
+        return updatedRestaurant;
     }
 }
