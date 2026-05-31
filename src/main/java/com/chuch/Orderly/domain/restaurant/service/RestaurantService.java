@@ -1,0 +1,36 @@
+package com.chuch.Orderly.domain.restaurant.service;
+
+import com.chuch.Orderly.domain.restaurant.dto.CreateRestaurantRequest;
+import com.chuch.Orderly.domain.restaurant.entity.Restaurant;
+import com.chuch.Orderly.domain.restaurant.mapper.RestaurantMapper;
+import com.chuch.Orderly.domain.restaurant.repository.RestaurantRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class RestaurantService {
+    private final RestaurantRepository restaurantRepository;
+    private final RestaurantMapper restaurantMapper;
+
+    @Transactional
+    public Restaurant createRestaurant(CreateRestaurantRequest request) {
+        log.info("Създаване на нов ресторант: име [{}], субдомейн [{}]", request.name(), request.subdomain());
+
+        if (restaurantRepository.findBySubdomain(request.subdomain()).isPresent()) {
+            log.warn("Грешка при създаване: Субдомейнът [{}] вече е зает!", request.subdomain());
+            throw new IllegalArgumentException("Този субдомейн вече се използва от друг ресторант.");
+        }
+
+        Restaurant restaurant = restaurantMapper.toEntity(request);
+
+        restaurant.setSubdomain(restaurant.getSubdomain().toLowerCase().trim());
+        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+
+        log.info("Успешно създаден ресторант [{}] с генерирано ID: {}", savedRestaurant, savedRestaurant.getId());
+        return savedRestaurant;
+    }
+}
