@@ -1,12 +1,13 @@
 package com.chuch.Orderly.domain.restaurant.mapper;
 
 import com.chuch.Orderly.domain.restaurant.dto.CreateRestaurantRequest;
+import com.chuch.Orderly.domain.restaurant.dto.UpdateRestaurantRequest;
 import com.chuch.Orderly.domain.restaurant.entity.Restaurant;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
+import org.mapstruct.*;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RestaurantMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -15,4 +16,6 @@ public interface RestaurantMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "tables", ignore = true)
     Restaurant toEntity(CreateRestaurantRequest request);
+
+    void updateEntityFromDto(UpdateRestaurantRequest dto, @MappingTarget Restaurant entity);
 }
