@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: orderly-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - orderly_postgres_data:/var/lib/postgresql/data
+    networks:
+      - orderly-network
+  rabbitmq:
+    image: rabbitmq:4.0-management-alpine
+    container_name: orderly-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABIT_UI_PORT}:15672"
+    volumes:
+      - orderly_rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - orderly-network
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: orderly-redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - orderly_redis_data:/data
+    networks:
+      - orderly-network
+volumes:
+  orderly_postgres_data:
+  orderly_rabbitmq_data:
+  orderly_redis_data:
+
+networks:
+  orderly-network:
+    driver: bridge

@@ -1,0 +1,40 @@
+name: Orderly CI Pipeline
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:7.4-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build and Run Tests with Maven
+        env:
+          DB_USER: test_user
+          DB_PASSWORD: test_password
+          DB_NAME: test_db
+          RABBITMQ_USER: test_rabbit
+          RABBITMQ_PASSWORD: test_rabbit_pass
+          JWT_SECRET: 9a8b7c6d5e4f3g2h1i0j9k8l7m6n5o4p3q2r1s0t9u8v7w6x5y4z3a2b1c0d9e8f
+        run: ./mvnw clean package
