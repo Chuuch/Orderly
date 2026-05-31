@@ -22,7 +22,7 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     ports:
       - "${RABBITMQ_PORT}:5672"
-      - "${RABIT_UI_PORT}:15672"
+      - "${RABBIT_UI_PORT}:15672"
     volumes:
       - orderly_rabbitmq_data:/var/lib/rabbitmq
     networks:
