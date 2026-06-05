@@ -56,6 +56,11 @@ public class User {
     private UUID restaurantId;
 
     @Builder.Default
+    @Column(nullable = false)
+    private boolean isActive = true;
+
+
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_roles",
