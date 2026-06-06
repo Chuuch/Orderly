@@ -85,7 +85,7 @@ public class Order {
     }
 
     public void removeItem(OrderItem item) {
-        itms.remove(item);
+        items.remove(item);
         item.setOrder(null);
     }
 
