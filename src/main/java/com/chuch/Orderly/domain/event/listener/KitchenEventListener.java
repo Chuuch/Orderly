@@ -2,6 +2,7 @@ package com.chuch.Orderly.domain.event.listener;
 
 import com.chuch.Orderly.domain.event.event.OrderCreatedEvent;
 import com.chuch.Orderly.domain.event.event.OrderStatusChangedEvent;
+import com.chuch.Orderly.domain.kitchen.service.KitchenNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class KitchenEventListener {
+
+    private final KitchenNotificationService kitchenNotificationService;
 
     @RabbitListener(queues = "${rabbitmq.queue.order-created}")
     public void onOrderCreated(OrderCreatedEvent event) {
@@ -24,6 +27,7 @@ public class KitchenEventListener {
             if (event.getSpecialInstructions() != null && !event.getSpecialInstructions().isEmpty()) {
                 log.info(" Special instructions: {}", event.getSpecialInstructions());
             }
+            kitchenNotificationService.notifyOrderCreated(event);
         } catch (Exception e) {
             log.error("Error processing OrderCreatedEvent for order {}", event.getOrderId(), e);
             throw new RuntimeException("Failed to process order created event", e);
@@ -64,6 +68,7 @@ public class KitchenEventListener {
                 default:
                     log.debug("Order {} status changed to: {}", event.getOrderId(), event.getNewStatus());
             }
+            kitchenNotificationService.notifyOrderStatusChanged(event);
         } catch (Exception e) {
             log.error("Error processing OrderStatusChangedEvent for order {}", event.getOrderId(), e);
             throw new RuntimeException("Failed to process order status changed event", e);
