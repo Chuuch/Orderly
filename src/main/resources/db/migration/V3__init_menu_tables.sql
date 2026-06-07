@@ -50,7 +50,7 @@ CREATE TABLE orders (
     total_amount NUMERIC(19, 2) NOT NULL DEFAULT 0,
     tax_amount NUMERIC(19, 2),
     discount_amount NUMERIC(19, 2),
-    spcial_instructions TEXT,
+    special_instructions TEXT,
     estimated_ready_time TIMESTAMP,
     completed_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

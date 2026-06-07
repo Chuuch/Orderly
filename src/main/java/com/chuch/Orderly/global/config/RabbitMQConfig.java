@@ -1,12 +1,14 @@
 package com.chuch.Orderly.global.config;
 
-import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.converter.JacksonJsonMessageConverter;
 
 @Configuration
 public class RabbitMQConfig {
@@ -22,6 +24,12 @@ public class RabbitMQConfig {
 
     @Value("${rabbitmq.queue.order-status-changed}")
     private String orderStatusChangedQueue;
+
+    @Value("${rabbitmq.queue.audit-order-created}")
+    private String auditOrderCreatedQueue;
+
+    @Value("${rabbitmq.queue.audit-order-status-changed}")
+    private String auditOrderStatusChangedQueue;
 
     @Value("${rabbitmq.queue.kitchen-orders}")
     private String kitchenOrdersQueue;
@@ -69,6 +77,34 @@ public class RabbitMQConfig {
                 .with(orderStatusChangedRoutingKey);
     }
 
+    @Bean
+    public Queue auditOrderCreatedQueue() {
+        return QueueBuilder.durable(auditOrderCreatedQueue)
+                .withArgument("x-message-ttl", 86400000)
+                .build();
+    }
+
+    @Bean
+    public Queue auditOrderStatusChangedQueue() {
+        return QueueBuilder.durable(auditOrderStatusChangedQueue)
+                .withArgument("x-message-ttl", 86400000)
+                .build();
+    }
+
+    @Bean
+    public Binding auditOrderCreatedBinding(Queue auditOrderCreatedQueue, TopicExchange orderExchange) {
+        return BindingBuilder.bind(auditOrderCreatedQueue)
+                .to(orderExchange)
+                .with(orderCreatedRoutingKey);
+    }
+
+    @Bean
+    public Binding auditOrderStatusChangedBinding(Queue auditOrderStatusChangedQueue, TopicExchange orderExchange) {
+        return BindingBuilder.bind(auditOrderStatusChangedQueue)
+                .to(orderExchange)
+                .with(orderStatusChangedRoutingKey);
+    }
+
     // ================ Kitchen Exchange ==================
     @Bean
     public TopicExchange kitchenExchange() {
@@ -89,15 +125,9 @@ public class RabbitMQConfig {
                 .with(kitchenOrderRoutingKey);
     }
 
-    // =============== Message Template =================
+    // =============== Message Converter =================
     @Bean
     public JacksonJsonMessageConverter messageConverter() {
         return new JacksonJsonMessageConverter();
-    }
-
-    @Bean
-    public RabbitTemplate rabbitTemplate(RabbitTemplate template) {
-        template.setMessageConverter((MessageConverter) messageConverter());
-        return template;
     }
 }

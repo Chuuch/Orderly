@@ -146,4 +146,56 @@ public class OrderController {
         List<OrderResponse> orders = orderService.getRecentOrders(restaurantId);
         return ResponseEntity.ok(orders);
     }
+
+
+    /**
+     * Confirm order (transition from PENDING to CONFIRMED)
+     * Typically called by kitchen staff when they start preparing
+     * @param orderId - order of id we look for
+     * @return - OrderResponse DTO
+     */
+    @PostMapping("/{orderId}/confirm")
+    @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'KITCHEN_STAFF')")
+    public ResponseEntity<OrderResponse> confirmOrder(@PathVariable UUID orderId) {
+        OrderResponse response = orderService.updateOrderStatus(orderId, OrderStatus.CONFIRMED);
+        return ResponseEntity.ok(response);
+    }
+
+
+    /**
+     * Mark order as preparing
+     * @param orderId - order id to look for and mark
+     * @return - OrderResponse DTo
+     */
+    @PostMapping("/{orderId}/preparing")
+    @PreAuthorize("hasRole('KITCHEN_STAFF')")
+    public ResponseEntity<OrderResponse> markPreparing(@PathVariable UUID orderId) {
+        OrderResponse response = orderService.updateOrderStatus(orderId, OrderStatus.PREPARING);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Mark order as ready for pickup
+     * @param orderId - order id to look for
+     * @return - returns an OrderResponse DTO
+     */
+    @PostMapping("/{orderId}/ready")
+    @PreAuthorize("hasRole('KITCHEN_STAFF')")
+    public ResponseEntity<OrderResponse> markReady(@PathVariable UUID orderId) {
+        OrderResponse response = orderService.updateOrderStatus(orderId, OrderStatus.READY);
+        return ResponseEntity.ok(response);
+    }
+
+
+    /**
+     * Mark order as served
+     * @param orderId - order id to look for and mark
+     * @return - OrderResponse DTO
+     */
+    @PostMapping("/{orderId}/served")
+    @PreAuthorize("hasRole('WAITER')")
+    public ResponseEntity<OrderResponse> markServed(@PathVariable UUID orderId) {
+        OrderResponse response = orderService.updateOrderStatus(orderId, OrderStatus.SERVED);
+        return ResponseEntity.ok(response);
+    }
 }

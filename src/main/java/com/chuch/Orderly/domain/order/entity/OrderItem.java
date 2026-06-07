@@ -3,10 +3,7 @@ package com.chuch.Orderly.domain.order.entity;
 
 import com.chuch.Orderly.domain.menu.entity.MenuItem;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
@@ -18,7 +15,8 @@ import java.util.UUID;
         @Index(name= "idx_order_id", columnList = "order_id"),
         @Index(name = "idx_menu_item_id", columnList = "menu_item_id")
 })
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

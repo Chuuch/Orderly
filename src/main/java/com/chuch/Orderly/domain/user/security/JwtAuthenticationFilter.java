@@ -1,12 +1,15 @@
 package com.chuch.Orderly.domain.user.security;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.chuch.Orderly.domain.user.repository.UserRepository;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,8 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    
+
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -30,11 +34,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 if (jwt != null && jwtTokenProvider.validateToken(jwt)) {
                     String email = jwtTokenProvider.getEmailFromToken(jwt);
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        email, null, new ArrayList<>()
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.debug("JWT Token validated for user: {}", email);
+                    userRepository.findByEmail(email).ifPresentOrElse(user -> {
+                        if (!user.isActive()) {
+                            log.warn("JWT valid but user {} is inactive", email);
+                            return;
+                        }
+                        List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
+                                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleType().name()))
+                                .toList();
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                user.getId().toString(), null, authorities
+                        );
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        log.debug("Authenticated user {} with roles {}", email, authorities);
+                    }, () -> log.warn("JWT valid but no user found for email {}", email));
                 }
             } catch (Exception e) {
                 log.error("Could not set user authentication in security context", e);
