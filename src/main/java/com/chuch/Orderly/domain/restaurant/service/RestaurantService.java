@@ -1,16 +1,18 @@
 package com.chuch.Orderly.domain.restaurant.service;
 
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.chuch.Orderly.domain.restaurant.dto.CreateRestaurantRequest;
 import com.chuch.Orderly.domain.restaurant.dto.UpdateRestaurantRequest;
 import com.chuch.Orderly.domain.restaurant.entity.Restaurant;
 import com.chuch.Orderly.domain.restaurant.mapper.RestaurantMapper;
 import com.chuch.Orderly.domain.restaurant.repository.RestaurantRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
