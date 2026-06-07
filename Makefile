@@ -1,7 +1,12 @@
-.PHONY: up down restart status logs db-shell build test clean
+.PHONY: up down restart status logs db-shell build test clean run
 
 up:
 	docker-compose up -d
+
+run: up
+	@echo "Waiting for infrastructure..."
+	@sleep 3
+	set -a && . ./.env && set +a && ./mvnw spring-boot:run
 
 down:
 	docker-compose down

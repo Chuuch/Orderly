@@ -1,5 +1,8 @@
 package com.chuch.Orderly.domain.order.service;
 
+import com.chuch.Orderly.domain.event.event.OrderCreatedEvent;
+import com.chuch.Orderly.domain.event.event.OrderStatusChangedEvent;
+import com.chuch.Orderly.domain.event.publisher.OrderEventPublisher;
 import com.chuch.Orderly.domain.menu.entity.MenuItem;
 import com.chuch.Orderly.domain.menu.repository.MenuItemRepository;
 import com.chuch.Orderly.domain.order.dto.CreateOrderRequest;
@@ -30,6 +33,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
     private final OrderMapper orderMapper;
+    private final OrderEventPublisher orderEventPublisher;
 
     public OrderResponse createOrder(CreateOrderRequest request, UUID userId) {
         Order order = Order.builder()
@@ -57,6 +61,7 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
         log.info("Created order {} with {} items for restaurant {}",
                 savedOrder.getId(), savedOrder.getItems().size(), request.getRestaurantId());
+        publishOrderCreatedEvent(savedOrder);
         return orderMapper.toResponse(savedOrder);
     }
 
@@ -110,6 +115,8 @@ public class OrderService {
 
         Order updatedOrder = orderRepository.save(order);
         log.info("Updated order {} status from {} to {}", orderId, oldStatus, newStatus);
+
+        publishOrderStatusChangedEvent(updatedOrder, oldStatus, newStatus);
         return orderMapper.toResponse(updatedOrder);
     }
 
@@ -124,10 +131,12 @@ public class OrderService {
             throw new IllegalStateException("Cannot cancel order in status: " + order.getStatus());
         }
 
+        OrderStatus oldStatus = order.getStatus();
         order.setStatus(OrderStatus.CANCELLED);
         Order updatedOrder = orderRepository.save(order);
         log.info("Cancelled order {}", orderId);
 
+        publishOrderStatusChangedEvent(updatedOrder, oldStatus, OrderStatus.CANCELLED);
         return orderMapper.toResponse(updatedOrder);
     }
 
@@ -139,5 +148,42 @@ public class OrderService {
         return orders.stream()
                 .map(orderMapper::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    // ============= Event Publishing ============== //
+    private void publishOrderCreatedEvent(Order order) {
+        List<OrderCreatedEvent.OrderItemEventDto> eventItems = order.getItems().stream()
+                .map(item -> new OrderCreatedEvent.OrderItemEventDto(
+                        item.getMenuItem().getId(),
+                        item.getMenuItem().getName(),
+                        item.getQuantity(),
+                        item.getUnitPrice(),
+                        item.getSpecialInstructions()
+                ))
+                .toList();
+
+        OrderCreatedEvent event = new OrderCreatedEvent(
+                order.getRestaurantId(),
+                order.getId(),
+                order.getRestaurantTableId(),
+                order.getUserId(),
+                order.getTotalAmount(),
+                eventItems,
+                order.getSpecialInstructions()
+        );
+        orderEventPublisher.publishOrderCreated(event);
+    }
+
+    private void publishOrderStatusChangedEvent(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
+        OrderStatusChangedEvent event = new OrderStatusChangedEvent(
+                order.getRestaurantId(),
+                order.getId(),
+                order.getRestaurantTableId(),
+                oldStatus,
+                newStatus,
+                order.getUserId()
+        );
+
+        orderEventPublisher.publishOrderStatusChanged(event);
     }
 }

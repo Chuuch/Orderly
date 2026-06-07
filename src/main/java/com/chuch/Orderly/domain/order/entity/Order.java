@@ -3,10 +3,7 @@ package com.chuch.Orderly.domain.order.entity;
 import com.chuch.Orderly.domain.order.enums.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -23,7 +20,8 @@ import java.util.UUID;
         @Index(name = "idx_status", columnList = "status"),
         @Index(name = "idx_created_at", columnList = "created_at")
 })
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
