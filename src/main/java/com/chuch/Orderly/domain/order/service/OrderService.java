@@ -2,7 +2,6 @@ package com.chuch.Orderly.domain.order.service;
 
 import com.chuch.Orderly.domain.event.event.OrderCreatedEvent;
 import com.chuch.Orderly.domain.event.event.OrderStatusChangedEvent;
-import com.chuch.Orderly.domain.event.publisher.OrderEventPublisher;
 import com.chuch.Orderly.domain.menu.entity.MenuItem;
 import com.chuch.Orderly.domain.menu.repository.MenuItemRepository;
 import com.chuch.Orderly.domain.order.dto.CreateOrderRequest;
@@ -14,6 +13,7 @@ import com.chuch.Orderly.domain.order.mapper.OrderMapper;
 import com.chuch.Orderly.domain.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
     private final OrderMapper orderMapper;
-    private final OrderEventPublisher orderEventPublisher;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public OrderResponse createOrder(CreateOrderRequest request, UUID userId) {
         Order order = Order.builder()
@@ -171,7 +171,7 @@ public class OrderService {
                 eventItems,
                 order.getSpecialInstructions()
         );
-        orderEventPublisher.publishOrderCreated(event);
+        applicationEventPublisher.publishEvent(event);
     }
 
     private void publishOrderStatusChangedEvent(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
@@ -184,6 +184,6 @@ public class OrderService {
                 order.getUserId()
         );
 
-        orderEventPublisher.publishOrderStatusChanged(event);
+        applicationEventPublisher.publishEvent(event);
     }
 }

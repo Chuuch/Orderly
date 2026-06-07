@@ -11,7 +11,7 @@ import java.util.UUID;
 @Repository
 public interface RestaurantTableRepository extends JpaRepository<RestaurantTable, UUID> {
     // Get all tables for a specific restaurant
-    List<RestaurantTable> findByRestaurantId(UUID restaurantId);
+    List<RestaurantTable> findByRestaurant_Id(UUID restaurantId);
     // Get the table when the client scans the QR code
     Optional<RestaurantTable> findByQrCodeToken(UUID qrCodeToken);
 }

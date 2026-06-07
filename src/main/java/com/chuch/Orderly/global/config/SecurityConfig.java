@@ -39,7 +39,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/api/v1/restaurants/{id}").permitAll()
-                .anyRequest().authenticated()
+                    .requestMatchers("/api/v1/tables/qr/**").permitAll()
+                    .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
             return http.build();
