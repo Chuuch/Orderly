@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Kitchen WebSocket Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+    <style>
+        body { font-family: monospace; padding: 16px; }
+        #log { white-space: pre-wrap; border: 1px solid #ccc; padding: 12px; min-height: 200px; }
+    </style>
+</head>
+<body>
+<h2>Kitchen WebSocket Test</h2>
+<p>Status: <span id="status">disconnected</span></p>
+<div id="log"></div>
+<script>
+    const RESTAURANT_ID = 'cba01ab3-c48e-44cc-9dc8-57d8ece8e01d';
+    const logEl = document.getElementById('log');
+    const statusEl = document.getElementById('status');
+    function log(msg) {
+        logEl.textContent += msg + '\n';
+    }
+    const client = new StompJs.Client({
+        brokerURL: 'ws://localhost:8080/ws',
+        onConnect: () => {
+            statusEl.textContent = 'connected';
+            log('Connected to /ws');
+            client.subscribe('/topic/restaurant/' + RESTAURANT_ID + '/kitchen', (message) => {
+                log('MESSAGE: ' + message.body);
+            });
+            log('Subscribed to /topic/restaurant/' + RESTAURANT_ID + '/kitchen');
+        },
+        onStompError: (frame) => log('STOMP error: ' + frame.headers['message']),
+        onWebSocketError: (e) => log('WebSocket error: ' + e),
+    });
+    client.activate();
+</script>
+</body>
+</html>
