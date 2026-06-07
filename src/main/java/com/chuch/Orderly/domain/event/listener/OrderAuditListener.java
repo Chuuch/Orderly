@@ -1,5 +1,6 @@
 package com.chuch.Orderly.domain.event.listener;
 
+import com.chuch.Orderly.domain.event.audit.OrderAuditService;
 import com.chuch.Orderly.domain.event.event.OrderCreatedEvent;
 import com.chuch.Orderly.domain.event.event.OrderStatusChangedEvent;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class OrderAuditListener {
 
+    private final OrderAuditService orderAuditService;
+
     @RabbitListener(queues = "${rabbitmq.queue.audit-order-created}")
     public void auditOrderCreated(OrderCreatedEvent event) {
         try {
@@ -20,8 +23,7 @@ public class OrderAuditListener {
                     event.getRestaurantId(), event.getOrderId(), event.getUserId(), event.getTotalAmount());
             log.info("AUDIT: Items: {}", event.getItems().size());
 
-            // In production save to audit table or external logging system
-            // auditService.logOrderCreated(event);
+            orderAuditService.logOrderCreated(event);
         } catch (Exception e) {
             log.error("Error auditing OrderCreatedEvent", e);
         }
@@ -34,8 +36,7 @@ public class OrderAuditListener {
             log.info("AUDIT: Order ID: {}, Status: {} -> {}, Changed by: {}",
                     event.getOrderId(), event.getOldStatus(), event.getNewStatus(), event.getChangedBy());
 
-            // In production, save to audit table
-            // auditService.logOrderStatusChanged(event);
+            orderAuditService.logOrderStatusChanged(event);
         } catch (Exception e) {
             log.error("Error auditing OrderStatusChangedEvent", e);
         }
