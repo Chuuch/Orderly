@@ -40,6 +40,18 @@ public class RestaurantService {
     }
 
     @Transactional
+    public Restaurant getRestaurant(UUID id) {
+        return restaurantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Restaurant not found: " + id));
+    }
+
+    @Transactional
+    public Restaurant getRestaurantBySubdomain(String subdomain) {
+        return restaurantRepository.findBySubdomain(subdomain)
+                .orElseThrow(() -> new IllegalArgumentException("Restaurant not found: " + subdomain));
+    }
+
+    @Transactional
     public Restaurant updateRestaurant(UUID id, UpdateRestaurantRequest request) {
         log.info("Обновяване на ресторант с ID: {}", id);
 
