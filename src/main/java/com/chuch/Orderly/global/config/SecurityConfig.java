@@ -3,6 +3,8 @@ package com.chuch.Orderly.global.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,14 +36,17 @@ public class SecurityConfig {
     public SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers("/actuator/health").permitAll()
-                .requestMatchers("/api/v1/restaurants/{id}").permitAll()
-                    .requestMatchers("/api/v1/tables/qr/**").permitAll()
-                    .anyRequest().authenticated()
-            )
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/kitchen-test.html", "/static/**").permitAll()
+                        .requestMatchers("/api/v1/public/**").permitAll()
+                        .requestMatchers("/api/v1/tables/qr/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/restaurants/**").permitAll()
+                        .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
             return http.build();
     }
@@ -51,6 +56,7 @@ public class SecurityConfig {
     public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
