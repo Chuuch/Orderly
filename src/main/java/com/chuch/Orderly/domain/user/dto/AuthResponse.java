@@ -7,6 +7,7 @@ public record AuthResponse(
     String email,
     String firstName,
     String lastName,
+    UUID restaurantId,
     String accessToken,
     long expiresIn
 ) {
