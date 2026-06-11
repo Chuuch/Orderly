@@ -1,8 +1,14 @@
 import { useAuth } from "@/hooks/useAuth";
+import { useCurrentUser } from "@/hooks/queries/useCurrentUser";
 import { Link } from "react-router-dom";
 
 export function AdminHomePage() {
     const { session } = useAuth();
+    const { data: currentUser } = useCurrentUser();
+
+    const roles = currentUser?.roles?.length
+        ? currentUser.roles.join(", ")
+        : null;
 
     return (
         <div>
@@ -10,6 +16,9 @@ export function AdminHomePage() {
             {session && (
                 <p className="mt-2 text-stone-600">
                     Signed in as {session.firstName} {session.lastName} ({session.email})
+                    {roles && (
+                        <span className="mt-1 block text-sm text-stone-500">Roles: {roles}</span>
+                    )}
                 </p>
             )}
 

@@ -99,6 +99,7 @@ export function KitchenPage() {
                     <h1 className="text-3xl font-bold text-stone-900">Kitchen board</h1>
                     <p className="mt-1 text-sm text-stone-600">
                         {activeOrders.length} active order{activeOrders.length === 1 ? "" : "s"}
+                        {" · "}Ready orders auto-hide after 15 min
                     </p>
                 </div>
                 <ConnectionBadge state={connectionState} />

@@ -12,7 +12,8 @@ function formatTableLabel(order: OrderResponse): string {
     return order.tableNumber ? `Table ${order.tableNumber}` : `Table ···${order.restaurantTableId.slice(-4).toUpperCase()}`;
 }
 
-function formatTime(iso: string): string {
+function formatTime(iso: string | undefined): string {
+    if (!iso) return "—";
     return new Intl.DateTimeFormat(undefined, {
         hour: "2-digit",
         minute: "2-digit",
@@ -32,7 +33,9 @@ export function KitchenOrderCard({
               ? { label: "Start preparing", onClick: () => onAdvance("PREPARING") }
               : order.status === "PREPARING"
                 ? { label: "Mark ready", onClick: () => onAdvance("READY") }
-                : null;
+                : order.status === "READY"
+                  ? { label: "Mark served", onClick: () => onAdvance("SERVED") }
+                  : null;
 
     return (
         <article className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:shadow-md">

@@ -1,5 +1,6 @@
 import { ordersApi } from "@/api/orders.api";
 import { useAuth } from "@/hooks/useAuth";
+import { READY_MAX_AGE_MS } from "@/lib/kitchen-config";
 import { subscribeKitchenTopic } from "@/lib/ws-client";
 import type { WsConnectionState } from "@/types/kitchen";
 import type { OrderResponse, OrderStatus } from "@/types/order";
@@ -7,6 +8,19 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 
 const ACTIVE_STATUSES: OrderStatus[] = ["PENDING", "CONFIRMED", "PREPARING", "READY"];
+
+function isVisibleKitchenOrder(order: OrderResponse): boolean {
+    if (!ACTIVE_STATUSES.includes(order.status)) {
+        return false;
+    }
+
+    if (order.status === "READY" && order.updatedAt) {
+        const ageMs = Date.now() - new Date(order.updatedAt).getTime();
+        return ageMs < READY_MAX_AGE_MS;
+    }
+
+    return true;
+}
 
 export function useKitchenOrders() {
     const { session } = useAuth();
@@ -46,7 +60,7 @@ export function useKitchenOrders() {
 
     const activeOrders = useMemo(() => {
         return (query.data ?? [])
-            .filter((order) => ACTIVE_STATUSES.includes(order.status))
+            .filter(isVisibleKitchenOrder)
             .sort(
                 (a, b) =>
                     new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),

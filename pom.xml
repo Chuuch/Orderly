@@ -192,6 +192,21 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<environmentVariables>
+						<JWT_SECRET>9a8b7c6d5e4f3g2h1i0j9k8l7m6n5o4p3q2r1s0t9u8v7w6x5y4z3a2b1c0d9e8f</JWT_SECRET>
+						<DB_USER>test</DB_USER>
+						<DB_PASSWORD>test</DB_PASSWORD>
+						<DB_NAME>test</DB_NAME>
+						<RABBITMQ_USER>guest</RABBITMQ_USER>
+						<RABBITMQ_PASSWORD>guest</RABBITMQ_PASSWORD>
+						<TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
+					</environmentVariables>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<executions>
 					<execution>
