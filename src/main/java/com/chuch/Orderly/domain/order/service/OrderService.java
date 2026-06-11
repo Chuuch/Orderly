@@ -11,6 +11,8 @@ import com.chuch.Orderly.domain.order.entity.OrderItem;
 import com.chuch.Orderly.domain.order.enums.OrderStatus;
 import com.chuch.Orderly.domain.order.mapper.OrderMapper;
 import com.chuch.Orderly.domain.order.repository.OrderRepository;
+import com.chuch.Orderly.domain.restaurant.repository.RestaurantTableRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -32,6 +34,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
+    private final RestaurantTableRepository restaurantTableRepository;
     private final OrderMapper orderMapper;
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -58,24 +61,24 @@ public class OrderService {
             order.addItem(orderItem);
         }
         order.calculateTotal();
-        Order savedOrder = orderRepository.save(order);
+        Order savedOrder = orderRepository.saveAndFlush(order);
         log.info("Created order {} with {} items for restaurant {}",
                 savedOrder.getId(), savedOrder.getItems().size(), request.getRestaurantId());
         publishOrderCreatedEvent(savedOrder);
-        return orderMapper.toResponse(savedOrder);
+        return toEnrichedResponse(savedOrder);
     }
 
     @Transactional(readOnly = true)
     public OrderResponse getOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderId));
-        return orderMapper.toResponse(order);
+        return toEnrichedResponse(order);
     }
 
     @Transactional(readOnly = true)
     public Page<OrderResponse> getRestaurantOrders(UUID restaurantId, Pageable pageable) {
         Page<Order> orders = orderRepository.findByRestaurantId(restaurantId, pageable);
-        return orders.map(orderMapper::toResponse);
+        return orders.map(this::toEnrichedResponse);
     }
 
     @Transactional(readOnly = true)
@@ -84,14 +87,14 @@ public class OrderService {
                 restaurantTableId, OrderStatus.PENDING
         );
         return orders.stream()
-                .map(orderMapper::toResponse)
+                .map(this::toEnrichedResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public Page<OrderResponse> getOrdersByStatus(UUID restaurantId, OrderStatus status, Pageable pageable) {
         Page<Order> orders = orderRepository.findByRestaurantIdAndStatus(restaurantId, status, pageable);
-        return orders.map(orderMapper::toResponse);
+        return orders.map(this::toEnrichedResponse);
     }
 
     public OrderResponse updateOrderStatus(UUID orderId, OrderStatus newStatus) {
@@ -117,7 +120,7 @@ public class OrderService {
         log.info("Updated order {} status from {} to {}", orderId, oldStatus, newStatus);
 
         publishOrderStatusChangedEvent(updatedOrder, oldStatus, newStatus);
-        return orderMapper.toResponse(updatedOrder);
+        return toEnrichedResponse(updatedOrder);
     }
 
     public OrderResponse cancelOrder(UUID orderId) {
@@ -137,7 +140,7 @@ public class OrderService {
         log.info("Cancelled order {}", orderId);
 
         publishOrderStatusChangedEvent(updatedOrder, oldStatus, OrderStatus.CANCELLED);
-        return orderMapper.toResponse(updatedOrder);
+        return toEnrichedResponse(updatedOrder);
     }
 
     @Transactional(readOnly = true)
@@ -146,8 +149,15 @@ public class OrderService {
                 restaurantId, LocalDateTime.now().minusHours(24)
         );
         return orders.stream()
-                .map(orderMapper::toResponse)
+                .map(this::toEnrichedResponse)
                 .collect(Collectors.toList());
+    }
+
+    private OrderResponse toEnrichedResponse(Order order) {
+        OrderResponse response = orderMapper.toResponse(order);
+        restaurantTableRepository.findById(order.getRestaurantId())
+        .ifPresent(table -> response.setTableNumber(table.getTableNumber()));
+        return response;
     }
 
     // ============= Event Publishing ============== //

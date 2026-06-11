@@ -8,8 +8,8 @@ type KitchenOrderCardProps = {
     onAdvance: (status: OrderStatus) => void;
 };
 
-function formatTableLabel(tableId: string): string {
-    return `Table ···${tableId.slice(-4).toUpperCase()}`;
+function formatTableLabel(order: OrderResponse): string {
+    return order.tableNumber ? `Table ${order.tableNumber}` : `Table ···${order.restaurantTableId.slice(-4).toUpperCase()}`;
 }
 
 function formatTime(iso: string): string {
@@ -39,7 +39,7 @@ export function KitchenOrderCard({
             <div className="flex items-start justify-between gap-3">
                 <div>
                     <p className="text-sm font-semibold text-stone-900">
-                        {formatTableLabel(order.restaurantTableId)}
+                        {formatTableLabel(order)}
                     </p>
                     <p className="mt-0.5 text-xs text-stone-500">
                         {formatTime(order.createdAt)} · {order.items.length} items

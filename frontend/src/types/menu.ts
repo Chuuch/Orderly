@@ -23,3 +23,20 @@ export type MenuResponse = {
     createdAt: string;
     updatedAt: string;
 }
+
+export type CreateMenuItemRequest = {
+    name: string;
+    description?: string;
+    price: number;
+    preparationTimeMinutes: number;
+    isVegetarian?: boolean;
+    isSpicy?: boolean;
+    allergens?: string;
+    imageUrl?: string;
+}
+
+export type CreateMenuParams = {
+    restaurantId: string;
+    menuName: string;
+    description?: string;
+}

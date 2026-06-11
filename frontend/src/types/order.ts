@@ -33,6 +33,7 @@ export type OrderResponse = {
     id: string;
     restaurantId: string;
     restaurantTableId: string;
+    tableNumber: string;
     userId: string;
     status: OrderStatus;
     totalAmount: number;
