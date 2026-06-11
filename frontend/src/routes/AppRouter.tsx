@@ -6,6 +6,7 @@ import { QrMenuPage } from "@/pages/QrMenuPage";
 import { AdminHomePage } from "@/pages/AdminPage";
 import { AppShell } from "@/components/layout/AppShell";
 import { AdminMenuPage } from "@/pages/AdminMenuPage";
+import { KitchenPage } from "@/pages/KitchenPage";
 
 const router = createBrowserRouter([
     {path: '/login', element: <LoginPage />},
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
                 children: [
                     { path: '/admin', element: <AdminHomePage /> },
                     { path: '/admin/menus', element: <AdminMenuPage /> },
+                    { path: '/kitchen', element: <KitchenPage /> },
 
                 ]
             }
