@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
 
+    @Mapping(target = "tableNumber", ignore = true)
     @Mapping(target = "items", source = "items")
     OrderResponse toResponse(Order order);
 

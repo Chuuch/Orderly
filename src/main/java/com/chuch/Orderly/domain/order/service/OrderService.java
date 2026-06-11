@@ -155,7 +155,7 @@ public class OrderService {
 
     private OrderResponse toEnrichedResponse(Order order) {
         OrderResponse response = orderMapper.toResponse(order);
-        restaurantTableRepository.findById(order.getRestaurantId())
+        restaurantTableRepository.findById(order.getRestaurantTableId())
         .ifPresent(table -> response.setTableNumber(table.getTableNumber()));
         return response;
     }
