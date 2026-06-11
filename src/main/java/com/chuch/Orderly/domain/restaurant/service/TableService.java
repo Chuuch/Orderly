@@ -10,6 +10,7 @@ import com.chuch.Orderly.domain.restaurant.repository.RestaurantTableRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -46,7 +47,7 @@ public class TableService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
     public TableResponse getTableByQrToken(UUID qrCodeToken) {
         RestaurantTable table = tableRepository.findByQrCodeToken(qrCodeToken)
                 .orElseThrow(() -> new IllegalArgumentException("Table not found for QR token"));
