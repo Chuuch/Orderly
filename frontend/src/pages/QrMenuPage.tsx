@@ -2,11 +2,13 @@ import { CartBar } from "@/components/cart/CartBar";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { MenuItemCard } from "@/components/menu/MenuItemCard";
 import { OrderSuccessPanel } from "@/components/order/OrderSuccessPanel";
-import { useCart } from "@/hooks/useCart";
+import { publicApi } from "@/api/public.api";
 import { usePlaceOrder } from "@/hooks/queries/usePlaceOrder";
 import { useQrContext } from "@/hooks/queries/useQrContext";
+import { useCart } from "@/hooks/useCart";
+import { activeOrderStorage } from "@/lib/active-order-storage";
 import type { OrderResponse } from "@/types/order";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 export function QrMenuPage() {
@@ -17,13 +19,48 @@ export function QrMenuPage() {
 
     const [cartOpen, setCartOpen] = useState(false);
     const [placedOrder, setPlacedOrder] = useState<OrderResponse | null>(null);
+    const [isRestoringOrder, setIsRestoringOrder] = useState(false);
 
-    if (isPending) {
+    useEffect(() => {
+        if (!qrToken || placedOrder) return;
+
+        const storedOrderId = activeOrderStorage.get(qrToken);
+        if (!storedOrderId) return;
+
+        let cancelled = false;
+        setIsRestoringOrder(true);
+
+        publicApi
+            .getOrder(storedOrderId)
+            .then((order) => {
+                if (!cancelled) {
+                    setPlacedOrder(order);
+                }
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    activeOrderStorage.clear(qrToken);
+                }
+            })
+            .finally(() => {
+                if (!cancelled) {
+                    setIsRestoringOrder(false);
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [qrToken, placedOrder]);
+
+    if (isPending || isRestoringOrder) {
         return (
             <main className="flex min-h-screen items-center justify-center">
                 <div className="text-center">
                     <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-600" />
-                    <p className="mt-4 text-sm text-stone-500">Loading menu...</p>
+                    <p className="mt-4 text-sm text-stone-500">
+                        {isRestoringOrder ? "Loading your order…" : "Loading menu..."}
+                    </p>
                 </div>
             </main>
         );
@@ -55,7 +92,10 @@ export function QrMenuPage() {
                 order={placedOrder}
                 restaurantName={data.restaurant.name}
                 tableNumber={data.table.tableNumber}
-                onOrderMore={() => setPlacedOrder(null)}
+                onOrderMore={() => {
+                    activeOrderStorage.clear(qrToken);
+                    setPlacedOrder(null);
+                }}
             />
         );
     }
@@ -78,6 +118,7 @@ export function QrMenuPage() {
                 onSuccess: (order) => {
                     cart.clear();
                     setCartOpen(false);
+                    activeOrderStorage.set(qrToken, order.id);
                     setPlacedOrder(order);
                 },
             },

@@ -12,4 +12,9 @@ export const publicApi = {
         apiClient
             .post<OrderResponse>(`/api/v1/public/tables/qr/${qrToken}/orders`, body)
             .then((r) => r.data),
+
+    getOrder: (orderId: string) =>
+        apiClient
+            .get<OrderResponse>(`/api/v1/public/orders/${orderId}`)
+            .then((r) => r.data),
 }

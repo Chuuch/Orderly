@@ -1,9 +1,50 @@
 @import "tailwindcss";
 
 @theme {
-    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+    --color-brand-400: #34d399;
+    --color-brand-500: #10b981;
+    --color-brand-600: #059669;
+    --color-surface-900: #0a0f14;
+    --color-surface-800: #111827;
+    --color-surface-700: #1f2937;
 }
 
 body {
-    @apply bg-stone-50 font-sans text-stone-900 antialiased;
+    @apply bg-[#070b10] font-sans text-zinc-100 antialiased;
+}
+
+/* Subtle grid */
+.bg-grid {
+    background-image:
+        linear-gradient(to right, rgb(255 255 255 / 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+}
+
+/* Soft glow orbs (use on absolute divs) */
+.glow-orb-emerald {
+    background: radial-gradient(circle, rgb(16 185 129 / 0.22), transparent 70%);
+}
+
+.glow-orb-cyan {
+    background: radial-gradient(circle, rgb(34 211 238 / 0.14), transparent 70%);
+}
+
+/* Glass panel */
+.glass-panel {
+    @apply border border-white/10 bg-white/5 shadow-2xl shadow-black/40 backdrop-blur-xl;
+}
+
+/* Inputs */
+.field {
+    @apply w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/50 focus:ring-4 focus:ring-emerald-500/10;
+}
+
+.btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/30 transition hover:from-emerald-400 hover:to-teal-400 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.btn-ghost {
+    @apply inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:bg-white/10;
 }

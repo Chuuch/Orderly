@@ -1,3 +1,5 @@
+import { OrderStatusTracker } from "@/components/order/OrderStatusTracker";
+import { usePublicOrderStatus } from "@/hooks/queries/usePublicOrderStatus";
 import { formatCurrency } from "@/lib/format";
 import type { OrderResponse } from "@/types/order";
 
@@ -9,32 +11,33 @@ type OrderSuccessPanelProps = {
 };
 
 export function OrderSuccessPanel({
-    order,
+    order: initialOrder,
     restaurantName,
     tableNumber,
     onOrderMore,
 }: OrderSuccessPanelProps) {
+    const { data: order = initialOrder } = usePublicOrderStatus(initialOrder.id, initialOrder);
+
     return (
         <main className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center px-6 py-12">
-            <div className="w-full rounded-3xl border border-emerald-100 bg-white p-8 text-center shadow-xl shadow-emerald-600/5">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-3xl">
-                    ✓
-                </div>
-                <h1 className="text-2xl font-bold text-stone-900">Order placed!</h1>
-                <p className="mt-2 text-stone-600">
-                    {restaurantName} · Table {tableNumber}
-                </p>
-
-                <div className="mt-6 rounded-2xl bg-stone-50 p-4 text-left">
-                    <p className="text-sm text-stone-500">Order ID</p>
-                    <p className="mt-1 break-all font-mono text-sm text-stone-800">{order.id}</p>
-                    <div className="mt-4 flex items-center justify-between">
-                        <span className="text-sm text-stone-500">Status</span>
-                        <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
-                            {order.status}
-                        </span>
+            <div className="w-full rounded-3xl border border-emerald-100 bg-white p-8 shadow-xl shadow-emerald-600/5">
+                <div className="text-center">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-3xl">
+                        ✓
                     </div>
-                    <div className="mt-3 flex items-center justify-between">
+                    <h1 className="text-2xl font-bold text-stone-900">Order placed!</h1>
+                    <p className="mt-2 text-stone-600">
+                        {restaurantName} · Table {tableNumber}
+                    </p>
+                    <p className="mt-1 text-xs text-stone-400">
+                        We&apos;ll update this page as your order progresses.
+                    </p>
+                </div>
+
+                <OrderStatusTracker status={order.status} />
+
+                <div className="mt-6 rounded-2xl bg-stone-50 p-4">
+                    <div className="flex items-center justify-between">
                         <span className="text-sm text-stone-500">Total</span>
                         <span className="text-lg font-bold text-stone-900">
                             {formatCurrency(order.totalAmount)}
@@ -42,7 +45,7 @@ export function OrderSuccessPanel({
                     </div>
                 </div>
 
-                <ul className="mt-6 space-y-2 text-left">
+                <ul className="mt-4 space-y-2">
                     {order.items.map((item) => (
                         <li
                             key={item.id}
