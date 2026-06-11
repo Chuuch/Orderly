@@ -1,11 +1,18 @@
 import type { MenuResponse } from "./menu";
 
+export type TableStatus = "AVAILABLE" | "OCCUPIED" | "RESERVED";
+
 export type TableResponse = {
     id: string;
     restaurantId: string;
     tableNumber: string;
     qrCodeToken: string;
-    status: string;
+    status: TableStatus;
+    createdat?: string;
+}
+
+export type CreateTableRequest = {
+    tableNumber: string;
 }
 
 export type RestaurantResponse = {

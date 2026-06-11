@@ -24,6 +24,13 @@ export function AdminHomePage() {
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
                 <Link
+                    to="/admin/tables"
+                    className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md"
+                >
+                    <h2 className="font-semibold text-stone-900">Tables</h2>
+                    <p className="mt-1 text-sm text-stone-500">View and manage restaurant tables</p>
+                </Link>
+                <Link
                     to="/admin/menus"
                     className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md"
                 >

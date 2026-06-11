@@ -7,6 +7,7 @@ import { AdminHomePage } from "@/pages/AdminPage";
 import { AppShell } from "@/components/layout/AppShell";
 import { AdminMenuPage } from "@/pages/AdminMenuPage";
 import { KitchenPage } from "@/pages/KitchenPage";
+import { AdminTablesPage } from "@/pages/AdminTablesPage";
 
 const router = createBrowserRouter([
     {path: '/login', element: <LoginPage />},
@@ -19,8 +20,8 @@ const router = createBrowserRouter([
                 children: [
                     { path: '/admin', element: <AdminHomePage /> },
                     { path: '/admin/menus', element: <AdminMenuPage /> },
+                    { path: '/admin/tables', element: <AdminTablesPage /> },
                     { path: '/kitchen', element: <KitchenPage /> },
-
                 ]
             }
         ],

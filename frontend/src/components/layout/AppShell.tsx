@@ -30,6 +30,9 @@ export function AppShell() {
                             <NavLink to="/admin/menus" className={linkClass}>
                                 Menus
                             </NavLink>
+                            <NavLink to="/admin/tables" className={linkClass}>
+                                Tables
+                            </NavLink>
                             <NavLink to="/kitchen" className={linkClass}>
                                 Kitchen
                             </NavLink>
