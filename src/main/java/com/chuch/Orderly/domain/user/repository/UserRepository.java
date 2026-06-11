@@ -1,5 +1,6 @@
 package com.chuch.Orderly.domain.user.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,4 +15,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByEmail(String email);
     boolean existsByEmailAndRestaurantId(String email, UUID restaurantId);
     Optional<User> findByEmailAndRestaurantId(String email, UUID restaurantId);
+    List<User> findByRestaurantIdAndIsActiveTrue(UUID restaurantId);
 }
