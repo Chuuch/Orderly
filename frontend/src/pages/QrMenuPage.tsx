@@ -2,6 +2,7 @@ import { CartBar } from "@/components/cart/CartBar";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { MenuItemCard } from "@/components/menu/MenuItemCard";
 import { OrderSuccessPanel } from "@/components/order/OrderSuccessPanel";
+import { PageBackdrop } from "@/components/ui/PageBackdrop";
 import { publicApi } from "@/api/public.api";
 import { usePlaceOrder } from "@/hooks/queries/usePlaceOrder";
 import { useQrContext } from "@/hooks/queries/useQrContext";
@@ -55,14 +56,17 @@ export function QrMenuPage() {
 
     if (isPending || isRestoringOrder) {
         return (
-            <main className="flex min-h-screen items-center justify-center">
-                <div className="text-center">
-                    <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-600" />
-                    <p className="mt-4 text-sm text-stone-500">
-                        {isRestoringOrder ? "Loading your order…" : "Loading menu..."}
-                    </p>
-                </div>
-            </main>
+            <>
+                <PageBackdrop variant="auth" />
+                <main className="relative flex min-h-screen items-center justify-center">
+                    <div className="text-center">
+                        <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-white/10 border-t-emerald-400" />
+                        <p className="mt-4 text-sm text-zinc-400">
+                            {isRestoringOrder ? "Loading your order…" : "Loading menu…"}
+                        </p>
+                    </div>
+                </main>
+            </>
         );
     }
 
@@ -72,17 +76,25 @@ export function QrMenuPage() {
                 ? String((error as { message: string }).message)
                 : "Failed to load menu";
         return (
-            <main className="flex min-h-screen items-center justify-center px-6">
-                <p className="rounded-2xl bg-red-50 px-4 py-3 text-red-700">{message}</p>
-            </main>
+            <>
+                <PageBackdrop variant="auth" />
+                <main className="relative flex min-h-screen items-center justify-center px-6">
+                    <p className="rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                        {message}
+                    </p>
+                </main>
+            </>
         );
     }
 
     if (!data || !qrToken) {
         return (
-            <main className="flex min-h-screen items-center justify-center px-6">
-                <p className="text-stone-500">No menu data found.</p>
-            </main>
+            <>
+                <PageBackdrop variant="auth" />
+                <main className="relative flex min-h-screen items-center justify-center px-6">
+                    <p className="text-zinc-400">No menu data found.</p>
+                </main>
+            </>
         );
     }
 
@@ -132,29 +144,34 @@ export function QrMenuPage() {
 
     return (
         <>
-            <main className={`mx-auto min-h-screen max-w-lg ${cart.itemCount > 0 ? "pb-28" : "pb-8"}`}>
-                <header className="sticky top-0 z-30 border-b border-stone-200/80 bg-stone-50/90 px-6 py-5 backdrop-blur-md">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
+            <PageBackdrop variant="auth" />
+            <main
+                className={`relative mx-auto min-h-screen max-w-lg ${cart.itemCount > 0 ? "pb-28" : "pb-8"}`}
+            >
+                <header className="sticky top-0 z-30 border-b border-white/10 bg-[#070b10]/80 px-6 py-5 backdrop-blur-xl">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400/80">
                         Orderly
                     </p>
-                    <h1 className="mt-1 text-2xl font-bold text-stone-900">{restaurant.name}</h1>
-                    <div className="mt-3 inline-flex items-center rounded-full bg-white px-3 py-1 text-sm font-medium text-stone-700 shadow-sm ring-1 ring-stone-200">
+                    <h1 className="mt-1 text-2xl font-bold tracking-tight text-white">
+                        {restaurant.name}
+                    </h1>
+                    <div className="mt-3 inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-sm font-medium text-emerald-300 ring-1 ring-emerald-400/20">
                         Table {table.tableNumber}
                     </div>
                 </header>
 
                 <div className="px-6 pt-6">
                     {menus.length === 0 ? (
-                        <p className="rounded-2xl bg-white p-6 text-center text-stone-500 shadow-sm">
+                        <p className="rounded-2xl border border-dashed border-white/10 bg-white/5 p-6 text-center text-sm text-zinc-400">
                             No menus available right now.
                         </p>
                     ) : (
                         menus.map((menu) => (
                             <section key={menu.id} className="mb-10">
                                 <div className="mb-4">
-                                    <h2 className="text-xl font-bold text-stone-900">{menu.name}</h2>
+                                    <h2 className="text-xl font-bold text-white">{menu.name}</h2>
                                     {menu.description && (
-                                        <p className="mt-1 text-sm text-stone-500">{menu.description}</p>
+                                        <p className="mt-1 text-sm text-zinc-400">{menu.description}</p>
                                     )}
                                 </div>
 

@@ -82,6 +82,11 @@ public class PublicCustomerService {
         return response;
     }
 
+    @Transactional(readOnly = true)
+    public OrderResponse getOrder(UUID orderId) {
+        return orderService.getOrder(orderId);
+    }
+
     private void validateMenuItems(UUID restaurantId, List<OrderItemRequest> items) {
         for (OrderItemRequest itemRequest : items) {
             MenuItem menuitem = menuItemRepository.findById(itemRequest.getMenuItemId())

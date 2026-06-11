@@ -32,4 +32,9 @@ public class PublicCustomerController {
         OrderResponse response = publicCustomerService.createOrderFromQr(qrCodeToken, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable UUID orderId) {
+        return ResponseEntity.ok(publicCustomerService.getOrder(orderId));
+    }
 }

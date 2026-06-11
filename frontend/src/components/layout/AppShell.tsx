@@ -36,7 +36,7 @@ export function AppShell() {
                             <nav className="flex flex-wrap gap-1">
                                 {isAdmin && (
                                     <>
-                                        <NavLink to="/admin" className={linkClass}>Home</NavLink>
+                                        <NavLink to="/admin" end className={linkClass}>Home</NavLink>
                                         <NavLink to="/admin/menus" className={linkClass}>Menus</NavLink>
                                         <NavLink to="/admin/tables" className={linkClass}>Tables</NavLink>
                                         <NavLink to="/admin/staff" className={linkClass}>Staff</NavLink>
