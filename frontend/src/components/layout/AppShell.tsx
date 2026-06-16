@@ -1,14 +1,15 @@
 import { PageBackdrop } from "@/components/ui/PageBackdrop";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrentUser } from "@/hooks/queries/useCurrentUser";
-import { canAccessAdmin } from "@/lib/roles";
+import { canAccessAdmin, canAccessKitchen, canAccessWaiter } from "@/lib/roles";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 export function AppShell() {
     const { session, logout } = useAuth();
     const { data: currentUser } = useCurrentUser();
     const navigate = useNavigate();
-    const isAdmin = canAccessAdmin(currentUser?.roles ?? session?.roles);
+
+    const roles = currentUser?.roles ?? session?.roles;
 
     const handleLogout = () => {
         logout();
@@ -34,15 +35,32 @@ export function AppShell() {
                                 Orderly
                             </span>
                             <nav className="flex flex-wrap gap-1">
-                                {isAdmin && (
+                                {canAccessAdmin(roles) && (
                                     <>
-                                        <NavLink to="/admin" end className={linkClass}>Home</NavLink>
-                                        <NavLink to="/admin/menus" className={linkClass}>Menus</NavLink>
-                                        <NavLink to="/admin/tables" className={linkClass}>Tables</NavLink>
-                                        <NavLink to="/admin/staff" className={linkClass}>Staff</NavLink>
+                                        <NavLink to="/admin" end className={linkClass}>
+                                            Home
+                                        </NavLink>
+                                        <NavLink to="/admin/menus" className={linkClass}>
+                                            Menus
+                                        </NavLink>
+                                        <NavLink to="/admin/tables" className={linkClass}>
+                                            Tables
+                                        </NavLink>
+                                        <NavLink to="/admin/staff" className={linkClass}>
+                                            Staff
+                                        </NavLink>
                                     </>
                                 )}
-                                <NavLink to="/kitchen" className={linkClass}>Kitchen</NavLink>
+                                {canAccessKitchen(roles) && (
+                                    <NavLink to="/kitchen" className={linkClass}>
+                                        Kitchen
+                                    </NavLink>
+                                )}
+                                {canAccessWaiter(roles) && (
+                                    <NavLink to="/waiter" className={linkClass}>
+                                        Floor
+                                    </NavLink>
+                                )}
                             </nav>
                         </div>
                         <div className="flex items-center gap-4">
