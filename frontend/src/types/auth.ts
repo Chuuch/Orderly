@@ -15,3 +15,14 @@ export type LoginRequest = {
     email: string;
     password: string;
 }
+
+export type OnboardingRequest = {
+    restaurantName: string;
+    subdomain: string;
+    address?: string;
+    phoneNumber?: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+}
