@@ -2,6 +2,7 @@ package com.chuch.Orderly.domain.restaurant.service;
 
 import com.chuch.Orderly.domain.restaurant.dto.CreateTableRequest;
 import com.chuch.Orderly.domain.restaurant.dto.TableResponse;
+import com.chuch.Orderly.domain.restaurant.dto.UpdateTableRequest;
 import com.chuch.Orderly.domain.restaurant.entity.Restaurant;
 import com.chuch.Orderly.domain.restaurant.entity.RestaurantTable;
 import com.chuch.Orderly.domain.restaurant.mapper.TableMapper;
@@ -52,5 +53,39 @@ public class TableService {
         RestaurantTable table = tableRepository.findByQrCodeToken(qrCodeToken)
                 .orElseThrow(() -> new IllegalArgumentException("Table not found for QR token"));
         return tableMapper.toResponse(table);
+    }
+
+    @Transactional(readOnly = true)
+    public TableResponse getTable(UUID tableId, UUID restaurantId) {
+        RestaurantTable table = tableRepository.findById(tableId)
+        .orElseThrow(() -> new IllegalArgumentException("Table not found: " + tableId));
+        if (!table.getRestaurant().getId().equals(restaurantId)) {
+            throw new IllegalArgumentException("Table does not belong to this restaurant: " + tableId);
+        }
+        return tableMapper.toResponse(table);
+    }
+
+    public TableResponse updateTable(UUID restaurantId, UUID tableId, UpdateTableRequest request) {
+        RestaurantTable table = tableRepository.findById(tableId)
+        .orElseThrow(() -> new IllegalArgumentException("Table not found: " + tableId));
+        if (!table.getRestaurant().getId().equals(restaurantId)) {
+            throw new IllegalArgumentException("Table does not belong to this restaurant: " + tableId);
+        }
+        table.setTableNumber(request.tableNumber().trim());
+        if (request.status() != null) {
+            table.setStatus(request.status());
+        }
+
+        return tableMapper.toResponse(tableRepository.save(table));
+    }
+
+    public void deleteTable(UUID restaurantId, UUID tableId) {
+        RestaurantTable table = tableRepository.findById(tableId)
+        .orElseThrow(() -> new IllegalArgumentException("Table not found: " + tableId));
+        if (!table.getRestaurant().getId().equals(restaurantId)) {
+            throw new IllegalArgumentException("Table does not belong to this restaurant: " + tableId);
+        }
+        tableRepository.delete(table);
+        log.info("Deleted table {} from restaurant {}", tableId, restaurantId);
     }
 }
