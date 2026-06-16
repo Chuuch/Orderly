@@ -7,12 +7,14 @@ import com.chuch.Orderly.domain.menu.service.MenuService;
 import com.chuch.Orderly.domain.order.dto.CreateOrderRequest;
 import com.chuch.Orderly.domain.order.dto.OrderItemRequest;
 import com.chuch.Orderly.domain.order.dto.OrderResponse;
+import com.chuch.Orderly.domain.order.enums.OrderStatus;
 import com.chuch.Orderly.domain.order.service.OrderService;
 import com.chuch.Orderly.domain.restaurant.dto.PublicCreateOrderRequest;
 import com.chuch.Orderly.domain.restaurant.dto.QrScanContextResponse;
 import com.chuch.Orderly.domain.restaurant.dto.TableResponse;
 import com.chuch.Orderly.domain.restaurant.entity.Restaurant;
 import com.chuch.Orderly.domain.restaurant.mapper.RestaurantMapper;
+import com.chuch.Orderly.domain.user.constant.GuestUserConstants;
 import com.chuch.Orderly.domain.user.entity.Role;
 import com.chuch.Orderly.domain.user.entity.User;
 import com.chuch.Orderly.domain.user.enums.RoleType;
@@ -35,7 +37,7 @@ import java.util.UUID;
 @Slf4j
 public class PublicCustomerService {
 
-    private static final String GUEST_EMAIL = "qr-guest@orderly.internal";
+    private static final String GUEST_EMAIL = GuestUserConstants.QR_GUEST_EMAIL;
 
     private final TableService tableService;
     private final MenuService menuService;
@@ -90,10 +92,12 @@ public class PublicCustomerService {
     private void validateMenuItems(UUID restaurantId, List<OrderItemRequest> items) {
         for (OrderItemRequest itemRequest : items) {
             MenuItem menuitem = menuItemRepository.findById(itemRequest.getMenuItemId())
-                    .orElseThrow(() -> new IllegalArgumentException("Menu item not found: " + itemRequest.getMenuItemId()));
+                    .orElseThrow(
+                            () -> new IllegalArgumentException("Menu item not found: " + itemRequest.getMenuItemId()));
 
             if (!restaurantId.equals(menuitem.getMenu().getRestaurantId())) {
-                throw new IllegalArgumentException("Menu item does not belong to this restaurant: " + itemRequest.getMenuItemId());
+                throw new IllegalArgumentException(
+                        "Menu item does not belong to this restaurant: " + itemRequest.getMenuItemId());
             }
 
             Boolean available = menuitem.getIsAvalable();
@@ -126,5 +130,16 @@ public class PublicCustomerService {
         User savedUser = userRepository.save(guest);
         log.info("Created QR gues user {} for restaurant {}", savedUser.getId(), restaurantId);
         return savedUser.getId();
+    }
+
+    @Transactional
+    public OrderResponse cancelOrder(UUID orderId) {
+        OrderResponse order = orderService.getOrder(orderId);
+        if (order.getStatus() == OrderStatus.SERVED
+                || order.getStatus() == OrderStatus.PAID
+                || order.getStatus() == OrderStatus.CANCELLED) {
+            throw new IllegalStateException("Cannot cancel order in status: " + order.getStatus());
+        }
+        return orderService.cancelOrder(orderId);
     }
 }
