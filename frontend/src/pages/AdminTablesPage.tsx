@@ -2,11 +2,12 @@ import { TableQrCard } from "@/components/tables/TableQrCard";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { useRestaurantTables } from "@/hooks/queries/useRestaurantTables";
 import { useTableMutations } from "@/hooks/queries/useTableMutations";
+import type { UpdateTableRequest } from "@/types/restaurant";
 import { useState, type SubmitEventHandler } from "react";
 
 export function AdminTablesPage() {
     const { data: tables, isPending, isError, error } = useRestaurantTables();
-    const { createTable } = useTableMutations();
+    const { createTable, updateTable, deleteTable } = useTableMutations();
     const [tableNumber, setTableNumber] = useState("");
 
     const handleCreateTable: SubmitEventHandler<HTMLFormElement> = (e) => {
@@ -91,7 +92,14 @@ export function AdminTablesPage() {
                 ) : (
                     <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                         {sortedTables.map((table) => (
-                            <TableQrCard key={table.id} table={table} />
+                            <TableQrCard
+                                key={table.id}
+                                table={table}
+                                onUpdate={(tableId, body: UpdateTableRequest) =>
+                                    updateTable.mutate({ tableId, body })
+                                }
+                                onDelete={(tableId) => deleteTable.mutate(tableId)}
+                            />
                         ))}
                     </div>
                 )}
