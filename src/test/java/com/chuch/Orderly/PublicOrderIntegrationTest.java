@@ -1,8 +1,13 @@
 package com.chuch.Orderly;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +23,9 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 @Sql(scripts = "/test-data/public-order-flow.sql")
 class PublicOrderIntegrationTest {
+
+    private static final Pattern FIRST_UUID_PATTERN =
+            Pattern.compile("\"id\"\\s*:\\s*\"([0-9a-f-]{36})\"");
 
     @Autowired
     private MockMvc mockMvc;
@@ -42,5 +50,28 @@ class PublicOrderIntegrationTest {
                 .andExpect(jsonPath("$.totalAmount").value(12.50))
                 .andExpect(jsonPath("$.items[0].menuItemName").value("Margherita"))
                 .andExpect(jsonPath("$.createdAt").exists());
+    }
+
+    @Test
+    void getPublicOrder_returnsOrderStatus() throws Exception {
+        String createBody = """
+            { "items": [{ "menuItemId": "201e1da9-2a01-44b2-a297-3abf074e5ffa", "quantity": 1 }] }
+            """;
+        String response = mockMvc.perform(
+                post("/api/v1/public/tables/qr/d656853e-d0df-47a3-873b-b42511fbbea3/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createBody))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Matcher matcher = FIRST_UUID_PATTERN.matcher(response);
+        assertTrue(matcher.find(), "Expected order id in create-order response");
+        String orderId = matcher.group(1);
+
+        mockMvc.perform(get("/api/v1/public/orders/" + orderId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("PENDING"));
     }
 }

@@ -1,6 +1,6 @@
 import { formatCurrency } from "@/lib/format";
 import type { CartLine } from "@/types/order";
-import { useEffect, useState, type FormEventHandler } from "react";
+import { useEffect, useState, type SubmitEventHandler } from "react";
 
 type CartDrawerProps = {
     open: boolean;
@@ -29,7 +29,7 @@ export function CartDrawer({
         if (!open) setOrderNotes("");
     }, [open]);
 
-    const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
+    const handleSubmit: SubmitEventHandler<HTMLFormElement> = (e) => {
         e.preventDefault();
         onSubmit(orderNotes.trim());
     };
@@ -40,21 +40,21 @@ export function CartDrawer({
         <div className="fixed inset-0 z-50">
             <button
                 type="button"
-                className="absolute inset-0 bg-stone-900/40 backdrop-blur-[2px]"
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                 onClick={onClose}
                 aria-label="Close cart"
             />
 
-            <div className="absolute inset-x-0 bottom-0 mx-auto max-h-[85vh] max-w-lg overflow-hidden rounded-t-3xl bg-white shadow-2xl">
-                <div className="flex items-center justify-between border-b border-stone-100 px-6 py-4">
+            <div className="absolute inset-x-0 bottom-0 mx-auto max-h-[85vh] max-w-lg overflow-hidden rounded-t-3xl border border-white/10 bg-[#0c1219] shadow-2xl shadow-black/50">
+                <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
                     <div>
-                        <h2 className="text-lg font-bold text-stone-900">Your order</h2>
-                        <p className="text-sm text-stone-500">{lines.length} unique items</p>
+                        <h2 className="text-lg font-bold text-white">Your order</h2>
+                        <p className="text-sm text-zinc-400">{lines.length} unique items</p>
                     </div>
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-full p-2 text-stone-500 hover:bg-stone-100"
+                        className="rounded-full p-2 text-zinc-400 transition hover:bg-white/10 hover:text-white"
                         aria-label="Close"
                     >
                         ✕
@@ -64,23 +64,23 @@ export function CartDrawer({
                 <form onSubmit={handleSubmit} className="flex max-h-[calc(85vh-4rem)] flex-col">
                     <div className="flex-1 overflow-y-auto px-6 py-4">
                         {lines.length === 0 ? (
-                            <p className="py-8 text-center text-stone-500">Your cart is empty.</p>
+                            <p className="py-8 text-center text-zinc-400">Your cart is empty.</p>
                         ) : (
                             <ul className="space-y-4">
                                 {lines.map((line) => (
                                     <li
                                         key={line.menuItemId}
-                                        className="flex items-center justify-between gap-4 rounded-2xl bg-stone-50 p-4"
+                                        className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"
                                     >
                                         <div className="min-w-0">
-                                            <p className="font-medium text-stone-900">{line.name}</p>
-                                            <p className="text-sm text-stone-500">
+                                            <p className="font-medium text-white">{line.name}</p>
+                                            <p className="text-sm text-zinc-400">
                                                 {formatCurrency(line.price)} each
                                             </p>
                                         </div>
 
                                         <div className="flex items-center gap-3">
-                                            <div className="inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-2 py-1">
+                                            <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2 py-1">
                                                 <button
                                                     type="button"
                                                     onClick={() =>
@@ -89,11 +89,11 @@ export function CartDrawer({
                                                             line.quantity - 1,
                                                         )
                                                     }
-                                                    className="h-7 w-7 rounded-lg text-lg hover:bg-stone-50"
+                                                    className="h-7 w-7 rounded-lg text-lg text-zinc-200 hover:bg-white/10"
                                                 >
                                                     −
                                                 </button>
-                                                <span className="min-w-5 text-center text-sm font-semibold">
+                                                <span className="min-w-5 text-center text-sm font-semibold text-white">
                                                     {line.quantity}
                                                 </span>
                                                 <button
@@ -104,12 +104,12 @@ export function CartDrawer({
                                                             line.quantity + 1,
                                                         )
                                                     }
-                                                    className="h-7 w-7 rounded-lg text-lg hover:bg-stone-50"
+                                                    className="h-7 w-7 rounded-lg text-lg text-zinc-200 hover:bg-white/10"
                                                 >
                                                     +
                                                 </button>
                                             </div>
-                                            <p className="w-20 text-right font-semibold text-stone-900">
+                                            <p className="w-20 text-right font-semibold text-emerald-400">
                                                 {formatCurrency(line.price * line.quantity)}
                                             </p>
                                         </div>
@@ -119,7 +119,7 @@ export function CartDrawer({
                         )}
 
                         <label className="mt-6 block">
-                            <span className="mb-2 block text-sm font-medium text-stone-700">
+                            <span className="mb-2 block text-sm font-medium text-zinc-300">
                                 Order notes (optional)
                             </span>
                             <textarea
@@ -127,30 +127,30 @@ export function CartDrawer({
                                 onChange={(e) => setOrderNotes(e.target.value)}
                                 rows={3}
                                 placeholder="Allergies, timing, etc."
-                                className="w-full resize-none rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm outline-none ring-emerald-500/0 transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
+                                className="field resize-none"
                             />
                         </label>
 
                         {errorMessage && (
-                            <p className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">
+                            <p className="mt-4 rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-red-300">
                                 {errorMessage}
                             </p>
                         )}
                     </div>
 
-                    <div className="border-t border-stone-100 bg-white px-6 py-4">
+                    <div className="border-t border-white/10 bg-[#0a0f14]/90 px-6 py-4">
                         <div className="mb-4 flex items-center justify-between">
-                            <span className="text-stone-600">Subtotal</span>
-                            <span className="text-xl font-bold text-stone-900">
+                            <span className="text-zinc-400">Subtotal</span>
+                            <span className="text-xl font-bold text-white">
                                 {formatCurrency(subtotal)}
                             </span>
                         </div>
                         <button
                             type="submit"
                             disabled={lines.length === 0 || isSubmitting}
-                            className="w-full rounded-2xl bg-emerald-600 py-4 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-stone-300 disabled:shadow-none"
+                            className="btn-primary w-full"
                         >
-                            {isSubmitting ? "Placing order..." : "Place order"}
+                            {isSubmitting ? "Placing order…" : "Place order"}
                         </button>
                     </div>
                 </form>

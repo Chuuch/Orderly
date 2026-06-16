@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../useAuth";
-import type { CreateTableRequest, TableResponse } from "@/types/restaurant";
+import type { CreateTableRequest, TableResponse, UpdateTableRequest } from "@/types/restaurant";
 import type { ApiErrorResponse } from "@/types/api-error";
 import { tablesApi } from "@/api/tables.api";
 
@@ -16,8 +16,19 @@ export function useTableMutations() {
     };
 
     const createTable = useMutation<TableResponse, ApiErrorResponse, CreateTableRequest>({
-        mutationFn: (body) => tablesApi.createTable(restaurantId, body),
+        mutationFn: (body) => tablesApi.createTable(restaurantId!, body),
         onSuccess: invalidate,
     });
-    return { createTable };
+
+    const updateTable = useMutation<TableResponse, ApiErrorResponse, { tableId: string; body: UpdateTableRequest }>({
+        mutationFn: ({ tableId, body }) => tablesApi.updateTable(restaurantId!, tableId, body),
+        onSuccess: invalidate,
+    });
+
+    const deleteTable = useMutation<void, ApiErrorResponse, string>({
+        mutationFn: (tableId) => tablesApi.deleteTable(restaurantId!, tableId),
+        onSuccess: invalidate,
+    });
+
+    return { createTable, updateTable, deleteTable };
 }

@@ -27,9 +27,18 @@ public class PublicCustomerController {
     @PostMapping("/tables/qr/{qrCodeToken}/orders")
     public ResponseEntity<OrderResponse> createOrderFromQr(
             @PathVariable UUID qrCodeToken,
-            @Valid @RequestBody PublicCreateOrderRequest request
-            ) {
+            @Valid @RequestBody PublicCreateOrderRequest request) {
         OrderResponse response = publicCustomerService.createOrderFromQr(qrCodeToken, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable UUID orderId) {
+        return ResponseEntity.ok(publicCustomerService.getOrder(orderId));
+    }
+
+    @PostMapping("/orders/{orderId}/cancel")
+    public ResponseEntity<OrderResponse> cancelOrder(@PathVariable UUID orderId) {
+        return ResponseEntity.ok(publicCustomerService.cancelOrder(orderId));
     }
 }

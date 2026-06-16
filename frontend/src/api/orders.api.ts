@@ -18,4 +18,15 @@ export const ordersApi = {
                 params: { status },
             })
             .then((r) => r.data),
+
+    getOrdersByStatus: (restaurantId: string, status: OrderStatus, page = 0, size = 50) =>
+        apiClient
+            .get<{ content: OrderResponse[] }>(
+                `/api/v1/orders/restaurant/${restaurantId}/status/${status}`,
+                { params: { page, size } },
+            )
+            .then((r) => r.data.content),
+
+    markServed: (orderId: string) =>
+        apiClient.post<OrderResponse>(`/api/v1/orders/${orderId}/served`).then((r) => r.data),
 };

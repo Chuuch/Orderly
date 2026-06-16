@@ -21,4 +21,12 @@ export const menuApi = {
         apiClient
             .patch<MenuItemResponse>(`/api/v1/menu/items/${itemId}/availability`)
             .then((r) => r.data),
+    updateMenuItem: (itemId: string, body: CreateMenuItemRequest) =>
+        apiClient.put<MenuItemResponse>(`/api/v1/menu/items/${itemId}`, body).then((r) => r.data),
+
+    deleteMenuItem: (itemId: string) =>
+        apiClient.delete(`/api/v1/menu/items/${itemId}`).then(() => undefined),
+
+    deactivateMenu: (menuId: string) =>
+        apiClient.patch(`/api/v1/menu/${menuId}/deactivate`).then(() => undefined),
 }

@@ -3,6 +3,7 @@ package com.chuch.Orderly.domain.user.service;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -61,6 +62,7 @@ public class AuthService {
             savedUser.getFirstName(),
             savedUser.getLastName(),
             savedUser.getRestaurantId(),
+            roleNames(savedUser),
             token,
             expiresIn
         );
@@ -100,8 +102,15 @@ public class AuthService {
             user.getFirstName(),
             user.getLastName(),
             user.getRestaurantId(),
+            roleNames(user),
             token,
             expiresIn
         );
+    }
+
+    private Set<String> roleNames(User user) {
+        return user.getRoles().stream()
+        .map(r -> r.getRoleType().name())
+        .collect(Collectors.toSet());
     }
 }

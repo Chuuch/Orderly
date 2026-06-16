@@ -1,4 +1,5 @@
 import { KitchenOrderCard } from "@/components/kitchen/KitchenOrderCard";
+import { GlassCard } from "@/components/ui/GlassCard";
 import type { OrderResponse, OrderStatus } from "@/types/order";
 
 type KitchenStatusColumnProps = {
@@ -20,9 +21,9 @@ export function KitchenStatusColumn({
     onAdvance,
 }: KitchenStatusColumnProps) {
     return (
-        <section className="flex min-h-[420px] flex-col rounded-3xl border border-stone-200 bg-stone-100/80 p-4">
+        <GlassCard className="flex min-h-[420px] flex-col p-4">
             <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-stone-600">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-400">
                     {title}
                 </h2>
                 <span
@@ -34,7 +35,7 @@ export function KitchenStatusColumn({
 
             <div className="flex flex-1 flex-col gap-3 overflow-y-auto">
                 {orders.length === 0 ? (
-                    <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-stone-300 bg-white/60 px-4 py-10 text-center text-sm text-stone-500">
+                    <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/5 px-4 py-10 text-center text-sm text-zinc-500">
                         No orders
                     </div>
                 ) : (
@@ -49,6 +50,6 @@ export function KitchenStatusColumn({
                     ))
                 )}
             </div>
-        </section>
+        </GlassCard>
     );
 }

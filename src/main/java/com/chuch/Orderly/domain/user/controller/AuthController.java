@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chuch.Orderly.domain.user.dto.AuthResponse;
 import com.chuch.Orderly.domain.user.dto.LoginRequest;
+import com.chuch.Orderly.domain.user.dto.OnboardingRequest;
 import com.chuch.Orderly.domain.user.dto.RegisterRequest;
 import com.chuch.Orderly.domain.user.service.AuthService;
+import com.chuch.Orderly.domain.user.service.OnboardingService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController {
     
     private final AuthService authService;
+    private final OnboardingService onboardingService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -36,5 +39,11 @@ public class AuthController {
         log.info("POST /api/v1/auth/login - Logging in user with email: {}", request.email());
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/onboard")
+    public ResponseEntity<AuthResponse> onboard(@Valid @RequestBody OnboardingRequest request) {
+        log.info("POST /api/v1/auth/onboard - onboarding restaurant: {}", request.subdomain());
+        return ResponseEntity.status(HttpStatus.CREATED).body(onboardingService.onboard(request));
     }
 }

@@ -2,8 +2,8 @@ package com.chuch.Orderly.domain.restaurant.controller;
 
 import com.chuch.Orderly.domain.restaurant.dto.CreateTableRequest;
 import com.chuch.Orderly.domain.restaurant.dto.TableResponse;
+import com.chuch.Orderly.domain.restaurant.dto.UpdateTableRequest;
 import com.chuch.Orderly.domain.restaurant.service.TableService;
-import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,8 +24,7 @@ public class TableController {
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
     public ResponseEntity<TableResponse> createTable(
             @PathVariable UUID restaurantId,
-            @Valid @RequestBody CreateTableRequest request
-            ) {
+            @Valid @RequestBody CreateTableRequest request) {
         TableResponse response = tableService.createTable(restaurantId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -39,5 +38,23 @@ public class TableController {
     @GetMapping("/api/v1/tables/qr/{qrCodeToken}")
     public ResponseEntity<TableResponse> getTableByQrToken(@PathVariable UUID qrCodeToken) {
         return ResponseEntity.ok(tableService.getTableByQrToken(qrCodeToken));
+    }
+
+    @PutMapping("/api/v1/restaurants/{restaurantId}/tables/{tableId}")
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+    public ResponseEntity<TableResponse> updateTable(
+            @PathVariable UUID restaurantId,
+            @PathVariable UUID tableId,
+            @Valid @RequestBody UpdateTableRequest request) {
+        return ResponseEntity.ok(tableService.updateTable(restaurantId, tableId, request));
+    }
+
+    @DeleteMapping("/api/v1/restaurants/{restaurantId}/tables/{tableId}")
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+    public ResponseEntity<Void> deleteTable(
+            @PathVariable UUID restaurantId,
+            @PathVariable UUID tableId) {
+        tableService.deleteTable(restaurantId, tableId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -29,3 +29,8 @@ export type QrScanContext = {
     restaurant: RestaurantResponse;
     menus: MenuResponse[];
 }
+
+export type UpdateTableRequest = {
+    tableNumber: string;
+    status: TableStatus;
+};

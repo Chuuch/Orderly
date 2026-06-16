@@ -18,10 +18,10 @@ const COLUMNS: {
 
 function ConnectionBadge({ state }: { state: WsConnectionState }) {
     const styles: Record<WsConnectionState, string> = {
-        connecting: "bg-amber-100 text-amber-800",
-        connected: "bg-emerald-100 text-emerald-800",
-        disconnected: "bg-stone-200 text-stone-700",
-        error: "bg-red-100 text-red-800",
+        connecting: "bg-amber-500/15 text-amber-300 ring-1 ring-amber-400/20",
+        connected: "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/20",
+        disconnected: "bg-white/5 text-zinc-400 ring-1 ring-white/10",
+        error: "bg-red-500/15 text-red-300 ring-1 ring-red-400/20",
     };
 
     const labels: Record<WsConnectionState, string> = {
@@ -37,7 +37,7 @@ function ConnectionBadge({ state }: { state: WsConnectionState }) {
         >
             <span
                 className={`h-2 w-2 rounded-full ${
-                    state === "connected" ? "bg-emerald-500 animate-pulse" : "bg-current"
+                    state === "connected" ? "animate-pulse bg-emerald-400" : "bg-current"
                 }`}
             />
             {labels[state]}
@@ -72,8 +72,8 @@ export function KitchenPage() {
         return (
             <div className="flex min-h-[50vh] items-center justify-center">
                 <div className="text-center">
-                    <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-stone-200 border-t-stone-900" />
-                    <p className="mt-4 text-sm text-stone-500">Loading kitchen board…</p>
+                    <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-white/10 border-t-emerald-400" />
+                    <p className="mt-4 text-sm text-zinc-400">Loading kitchen board…</p>
                 </div>
             </div>
         );
@@ -85,7 +85,7 @@ export function KitchenPage() {
                 ? String((error as { message: string }).message)
                 : "Failed to load orders";
         return (
-            <p className="rounded-2xl bg-red-50 px-4 py-3 text-red-700">{message}</p>
+            <p className="rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-red-300">{message}</p>
         );
     }
 
@@ -93,11 +93,11 @@ export function KitchenPage() {
         <div className="space-y-6">
             <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
+                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400/80">
                         Operations
                     </p>
-                    <h1 className="text-3xl font-bold text-stone-900">Kitchen board</h1>
-                    <p className="mt-1 text-sm text-stone-600">
+                    <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">Kitchen board</h1>
+                    <p className="mt-2 text-sm text-zinc-400">
                         {activeOrders.length} active order{activeOrders.length === 1 ? "" : "s"}
                         {" · "}Ready orders auto-hide after 15 min
                     </p>
@@ -105,7 +105,7 @@ export function KitchenPage() {
                 <ConnectionBadge state={connectionState} />
             </div>
 
-            <div className="grid gap-4 xl:grid-cols-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 {COLUMNS.map((column) => (
                     <KitchenStatusColumn
                         key={column.status}

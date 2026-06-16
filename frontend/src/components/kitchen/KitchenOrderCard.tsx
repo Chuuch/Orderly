@@ -9,7 +9,9 @@ type KitchenOrderCardProps = {
 };
 
 function formatTableLabel(order: OrderResponse): string {
-    return order.tableNumber ? `Table ${order.tableNumber}` : `Table ···${order.restaurantTableId.slice(-4).toUpperCase()}`;
+    return order.tableNumber
+        ? `Table ${order.tableNumber}`
+        : `Table ···${order.restaurantTableId.slice(-4).toUpperCase()}`;
 }
 
 function formatTime(iso: string | undefined): string {
@@ -38,34 +40,32 @@ export function KitchenOrderCard({
                   : null;
 
     return (
-        <article className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+        <article className="rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/[0.08]">
             <div className="flex items-start justify-between gap-3">
                 <div>
-                    <p className="text-sm font-semibold text-stone-900">
-                        {formatTableLabel(order)}
-                    </p>
-                    <p className="mt-0.5 text-xs text-stone-500">
+                    <p className="text-sm font-semibold text-white">{formatTableLabel(order)}</p>
+                    <p className="mt-0.5 text-xs text-zinc-500">
                         {formatTime(order.createdAt)} · {order.items.length} items
                     </p>
                 </div>
-                <p className="text-sm font-bold text-stone-900">
+                <p className="text-sm font-bold text-emerald-400">
                     {formatCurrency(order.totalAmount)}
                 </p>
             </div>
 
             <ul className="mt-3 space-y-1.5">
                 {order.items.map((item) => (
-                    <li key={item.id} className="flex justify-between text-sm text-stone-700">
+                    <li key={item.id} className="flex justify-between text-sm text-zinc-300">
                         <span>
                             {item.quantity}× {item.menuItemName}
                         </span>
-                        <span className="text-stone-500">{formatCurrency(item.subTotal)}</span>
+                        <span className="text-zinc-500">{formatCurrency(item.subTotal)}</span>
                     </li>
                 ))}
             </ul>
 
             {order.specialInstructions && (
-                <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                <p className="mt-3 rounded-xl bg-amber-500/10 px-3 py-2 text-sm text-amber-200 ring-1 ring-amber-400/20">
                     Note: {order.specialInstructions}
                 </p>
             )}
@@ -75,9 +75,9 @@ export function KitchenOrderCard({
                     type="button"
                     disabled={isUpdating}
                     onClick={action.onClick}
-                    className="mt-4 w-full rounded-xl bg-stone-900 py-2.5 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+                    className="btn-primary mt-4 w-full"
                 >
-                    {isUpdating ? "Updating..." : action.label}
+                    {isUpdating ? "Updating…" : action.label}
                 </button>
             )}
         </article>
