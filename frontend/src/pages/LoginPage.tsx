@@ -4,7 +4,7 @@ import { PageBackdrop } from "@/components/ui/PageBackdrop";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { getDefaultRoute } from "@/lib/roles";
 import { useEffect, type SubmitEventHandler } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export function LoginPage() {
     const login = useLogin();
@@ -60,6 +60,12 @@ export function LoginPage() {
                             <button type="submit" disabled={login.isPending} className="btn-primary w-full">
                                 {login.isPending ? "Signing in…" : "Sign in"}
                             </button>
+                            <p className="mt-6 text-center text-sm text-zinc-400">
+                                New restaurant?{" "}
+                                <Link to="/signup" className="text-emerald-400 hover:text-emerald-300">
+                                    Create an account
+                                </Link>
+                            </p>
                         </form>
                     </GlassCard>
                 </div>
