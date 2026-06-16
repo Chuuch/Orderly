@@ -21,6 +21,7 @@ public class OrderResponse {
     private UUID restaurantId;
     private UUID restaurantTableId;
     private UUID userId;
+    private String tableNumber;
     private OrderStatus status;
     private BigDecimal totalAmount;
     private BigDecimal taxAmount;

@@ -60,6 +60,7 @@ public class AuthService {
             savedUser.getEmail(),
             savedUser.getFirstName(),
             savedUser.getLastName(),
+            savedUser.getRestaurantId(),
             token,
             expiresIn
         );
@@ -98,6 +99,7 @@ public class AuthService {
             user.getEmail(),
             user.getFirstName(),
             user.getLastName(),
+            user.getRestaurantId(),
             token,
             expiresIn
         );

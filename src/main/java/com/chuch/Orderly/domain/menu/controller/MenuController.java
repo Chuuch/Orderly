@@ -144,7 +144,7 @@ public class MenuController {
      * @return - returns void
      */
     @PatchMapping("/{menuId}/deactivate")
-    @PreAuthorize("hasRole('RESTAURANT_ADMIN'")
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
     public ResponseEntity<Void> deactivateMenu(@PathVariable UUID menuId) {
         menuService.deactivateMenu(menuId);
         return ResponseEntity.noContent().build();

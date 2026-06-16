@@ -1,13 +1,14 @@
 package com.chuch.Orderly.domain.restaurant.controller;
 
+import com.chuch.Orderly.domain.order.dto.OrderResponse;
+import com.chuch.Orderly.domain.restaurant.dto.PublicCreateOrderRequest;
 import com.chuch.Orderly.domain.restaurant.dto.QrScanContextResponse;
 import com.chuch.Orderly.domain.restaurant.service.PublicCustomerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -21,5 +22,14 @@ public class PublicCustomerController {
     @GetMapping("/tables/qr/{qrCodeToken}/context")
     public ResponseEntity<QrScanContextResponse> getQrScanContext(@PathVariable UUID qrCodeToken) {
         return ResponseEntity.ok(publicCustomerService.getQrScanContext(qrCodeToken));
+    }
+
+    @PostMapping("/tables/qr/{qrCodeToken}/orders")
+    public ResponseEntity<OrderResponse> createOrderFromQr(
+            @PathVariable UUID qrCodeToken,
+            @Valid @RequestBody PublicCreateOrderRequest request
+            ) {
+        OrderResponse response = publicCustomerService.createOrderFromQr(qrCodeToken, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
