@@ -29,10 +29,30 @@ export function useMenuMutations() {
             onSuccess: invalidate,
         });
 
-        const toggleAvailability = useMutation<MenuItemResponse, ApiErrorResponse, string>({
-            mutationFn: menuApi.toggleItemAvailability,
-            onSuccess: invalidate,
-        });
+    const toggleAvailability = useMutation<MenuItemResponse, ApiErrorResponse, string>({
+        mutationFn: menuApi.toggleItemAvailability,
+        onSuccess: invalidate,
+    });
 
-        return { createMenu, addMenuItem, toggleAvailability };
+    const updateMenuItem = useMutation<
+        MenuItemResponse,
+        ApiErrorResponse,
+        { itemId: string; body: CreateMenuItemRequest }
+    >({
+        mutationFn: ({ itemId, body }) => menuApi.updateMenuItem(itemId, body),
+        onSuccess: invalidate,
+    });
+
+    const deleteMenuItem = useMutation<void, ApiErrorResponse, string>({
+        mutationFn: menuApi.deleteMenuItem,
+        onSuccess: invalidate,
+    });
+
+    const deactivateMenu = useMutation<void, ApiErrorResponse, string>({
+        mutationFn: menuApi.deactivateMenu,
+        onSuccess: invalidate,
+    });
+
+    return { createMenu, addMenuItem, toggleAvailability, updateMenuItem, deleteMenuItem, deactivateMenu };
+
 }
