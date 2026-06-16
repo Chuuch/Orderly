@@ -24,11 +24,11 @@ public class RestaurantController {
     private final RestaurantMapper restaurantMapper;
 
     @PostMapping
-    public ResponseEntity<Restaurant> createRestaurant(@Valid @RequestBody CreateRestaurantRequest request) {
+    public ResponseEntity<RestaurantResponse> createRestaurant(@Valid @RequestBody CreateRestaurantRequest request) {
         log.info("Получена HTTP POST заявка за създаване на ресторант със субдомейн: {}", request.subdomain());
 
         Restaurant createdRestaurant = restaurantService.createRestaurant(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdRestaurant);
+        return ResponseEntity.status(HttpStatus.CREATED).body(restaurantMapper.toResponse(createdRestaurant));
     }
 
     @GetMapping("/{id}")
