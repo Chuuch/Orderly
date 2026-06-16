@@ -10,9 +10,12 @@ import { KitchenPage } from "@/pages/KitchenPage";
 import { AdminTablesPage } from "@/pages/AdminTablesPage";
 import { AdminStaffPage } from "@/pages/AdminStaffPage";
 import { AdminOnlyRoute } from "./AdminOnlyRoute";
+import { SignupPage } from "@/pages/SignupPage";
+import { WaiterPage } from "@/pages/WaiterPage";
 
 const router = createBrowserRouter([
     { path: "/login", element: <LoginPage /> },
+    { path: "/signup", element: <SignupPage /> },
     { path: "/t/:qrToken", element: <QrMenuPage /> },
     {
         element: <ProtectedRoute />,
@@ -30,6 +33,7 @@ const router = createBrowserRouter([
                         ],
                     },
                     { path: "/kitchen", element: <KitchenPage /> },
+                    { path: "/waiter", element: <WaiterPage /> },
                 ],
             },
         ],
