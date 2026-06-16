@@ -1,12 +1,16 @@
 import { GlassCard } from "@/components/ui/GlassCard";
 import { buildTableQrUrl } from "@/lib/qr-url";
-import type { TableResponse } from "@/types/restaurant";
+import type { TableResponse, TableStatus, UpdateTableRequest } from "@/types/restaurant";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 
 type TableQrCardProps = {
     table: TableResponse;
+    onUpdate: (tableId: string, body: UpdateTableRequest) => void;
+    onDelete: (tableId: string) => void;
 };
+
+
 
 const STATUS_STYLES: Record<string, string> = {
     AVAILABLE: "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/20",
@@ -14,7 +18,7 @@ const STATUS_STYLES: Record<string, string> = {
     RESERVED: "bg-zinc-500/15 text-zinc-300 ring-1 ring-zinc-400/20",
 };
 
-export function TableQrCard({ table }: TableQrCardProps) {
+export function TableQrCard({ table, onUpdate, onDelete }: TableQrCardProps) {
     const qrUrl = buildTableQrUrl(table.qrCodeToken);
     const [copied, setCopied] = useState(false);
 
@@ -50,6 +54,31 @@ export function TableQrCard({ table }: TableQrCardProps) {
                     Open
                 </a>
             </div>
+            <select
+                className="field mt-3"
+                value={table.status}
+                onChange={(e) =>
+                    onUpdate(table.id, {
+                        tableNumber: table.tableNumber,
+                        status: e.target.value as TableStatus,
+                    })
+                }
+            >
+                <option value="AVAILABLE">Available</option>
+                <option value="OCCUPIED">Occupied</option>
+                <option value="RESERVED">Reserved</option>
+            </select>
+            <button
+                type="button"
+                className="btn-ghost mt-2 w-full text-red-300"
+                onClick={() => {
+                    if (window.confirm(`Delete table ${table.tableNumber}?`)) {
+                        onDelete(table.id);
+                    }
+                }}
+            >
+                Delete table
+            </button>
         </GlassCard>
     );
 }
