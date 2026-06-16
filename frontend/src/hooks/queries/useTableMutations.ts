@@ -16,17 +16,17 @@ export function useTableMutations() {
     };
 
     const createTable = useMutation<TableResponse, ApiErrorResponse, CreateTableRequest>({
-        mutationFn: (body) => tablesApi.createTable(restaurantId, body),
+        mutationFn: (body) => tablesApi.createTable(restaurantId!, body),
         onSuccess: invalidate,
     });
 
     const updateTable = useMutation<TableResponse, ApiErrorResponse, { tableId: string; body: UpdateTableRequest }>({
-        mutationFn: ({ tableId, body }) => tablesApi.updateTable(restaurantId, tableId, body),
+        mutationFn: ({ tableId, body }) => tablesApi.updateTable(restaurantId!, tableId, body),
         onSuccess: invalidate,
     });
 
-    const deleteTable = useMutation<void, ApiErrorResponse, { tableId: string }>({
-        mutationFn: ({ tableId }) => tablesApi.deleteTable(restaurantId, tableId),
+    const deleteTable = useMutation<void, ApiErrorResponse, string>({
+        mutationFn: (tableId) => tablesApi.deleteTable(restaurantId!, tableId),
         onSuccess: invalidate,
     });
 
