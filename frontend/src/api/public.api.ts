@@ -7,7 +7,7 @@ export const publicApi = {
         apiClient
             .get<QrScanContext>(`/api/v1/public/tables/qr/${qrToken}/context`)
             .then((r) => r.data),
-        
+
     placeOrder: (qrToken: string, body: PublicCreateOrderRequest) =>
         apiClient
             .post<OrderResponse>(`/api/v1/public/tables/qr/${qrToken}/orders`, body)
@@ -16,5 +16,10 @@ export const publicApi = {
     getOrder: (orderId: string) =>
         apiClient
             .get<OrderResponse>(`/api/v1/public/orders/${orderId}`)
+            .then((r) => r.data),
+
+    cancelOrder: (orderId: string) =>
+        apiClient
+            .post<OrderResponse>(`/api/v1/public/orders/${orderId}/cancel`)
             .then((r) => r.data),
 }
