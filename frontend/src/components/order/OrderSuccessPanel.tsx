@@ -1,6 +1,7 @@
 import { OrderStatusTracker } from "@/components/order/OrderStatusTracker";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PageBackdrop } from "@/components/ui/PageBackdrop";
+import { useCancelPublicOrder } from "@/hooks/queries/useCancelPublicOrder";
 import { usePublicOrderStatus } from "@/hooks/queries/usePublicOrderStatus";
 import { formatCurrency } from "@/lib/format";
 import type { OrderResponse } from "@/types/order";
@@ -19,6 +20,9 @@ export function OrderSuccessPanel({
     onOrderMore,
 }: OrderSuccessPanelProps) {
     const { data: order = initialOrder } = usePublicOrderStatus(initialOrder.id, initialOrder);
+    const cancelOrder = useCancelPublicOrder();
+
+    const canCancel = order.status === "PENDING" || order.status === "CONFIRMED";
 
     return (
         <>
@@ -66,6 +70,20 @@ export function OrderSuccessPanel({
                     <button type="button" onClick={onOrderMore} className="btn-ghost mt-8 w-full">
                         Order more
                     </button>
+                    {canCancel && (
+                        <button
+                            type="button"
+                            className="btn-ghost mt-4 w-full text-red-300"
+                            disabled={cancelOrder.isPending}
+                            onClick={() => {
+                                if (window.confirm("Cancel this order?")) {
+                                    cancelOrder.mutate(order.id);
+                                }
+                            }}
+                        >
+                            {cancelOrder.isPending ? "Cancelling…" : "Cancel order"}
+                        </button>
+                    )}
                 </GlassCard>
             </main>
         </>
