@@ -1,5 +1,4 @@
 import { GlassCard } from "@/components/ui/GlassCard";
-import { PageBackdrop } from "@/components/ui/PageBackdrop";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrentUser } from "@/hooks/queries/useCurrentUser";
 import { Link } from "react-router-dom";
@@ -18,7 +17,6 @@ export function AdminHomePage() {
 
     return (
         <>
-            <PageBackdrop />
             <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400/80">Dashboard</p>
                 <h1 className="mt-2 text-3xl font-bold text-white">Admin</h1>
