@@ -94,7 +94,7 @@ public class OrderController {
      * @return - returns a Page object of OrderResponse DTO
      */
     @GetMapping("/restaurant/{restaurantId}/status/{status}")
-    @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'KITCHEN_STAFF')")
+    @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'KITCHEN_STAFF', 'WAITER')")
     public ResponseEntity<Page<OrderResponse>> getOrdersByStatus(
             @PathVariable UUID restaurantId,
             @PathVariable OrderStatus status,
