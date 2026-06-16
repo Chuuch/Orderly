@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.chuch.Orderly.domain.user.security.JwtAuthenticationFilter;
+import com.chuch.Orderly.global.ratelimit.PublicRateLimitFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final PublicRateLimitFilter publicRateLimitFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -47,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/tables/qr/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/restaurants/**").permitAll()
                         .anyRequest().authenticated())
+            .addFilterBefore(publicRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
             return http.build();
     }
@@ -63,6 +66,7 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/health").permitAll()
                 .anyRequest().permitAll()
             )
+            .addFilterBefore(publicRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
